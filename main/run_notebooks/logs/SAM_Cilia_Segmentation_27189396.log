@@ -1,0 +1,13 @@
+INFO: localdir at /localscratch/27189396.aman.kukde
+INFO: your job will run on local system.
+
+📘 Running notebook
+  Input:   /home/aman.kukde/cilia_ai/sam2/sam2_feature_space_aman.ipynb
+  Output:  /home/aman.kukde/cilia_ai/sam_runs/notebooks/20251203.170740_sam2_feature_space_aman_9746.ipynb
+  Params:  {}
+==========================================
+Executing:   0%|          | 0/12 [00:00<?, ?cell/s]Executing:   8%|▊         | 1/12 [00:31<05:49, 31.79s/cell]Executing:  17%|█▋        | 2/12 [00:36<02:36, 15.67s/cell]Executing:  42%|████▏     | 5/12 [01:43<02:23, 20.51s/cell]Executing:  58%|█████▊    | 7/12 [01:43<01:01, 12.22s/cell]Executing:  67%|██████▋   | 8/12 [01:44<00:38,  9.57s/cell]Executing:  83%|████████▎ | 10/12 [01:44<00:11,  5.87s/cell]Executing: 100%|██████████| 12/12 [01:44<00:00,  3.83s/cell]Executing: 100%|██████████| 12/12 [01:48<00:00,  9.04s/cell]
+
+✅ Notebook execution complete.
+Saved: /home/aman.kukde/cilia_ai/sam_runs/notebooks/20251203.170740_sam2_feature_space_aman_9746.ipynb
+

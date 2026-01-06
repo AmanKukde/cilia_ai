@@ -1,0 +1,50 @@
+INFO: localdir at /localscratch/27188920.aman.kukde
+INFO: your job will run on local system.
+
+📘 Running notebook
+  Input:   /home/aman.kukde/cilia_ai/sam2/sam2_feature_space_aman.ipynb
+  Output:  /home/aman.kukde/cilia_ai/sam_runs/notebooks/20251203.170205_sam2_feature_space_aman_8966.ipynb
+  Params:  {}
+==========================================
+Executing:   0%|          | 0/12 [00:00<?, ?cell/s]Executing:   8%|▊         | 1/12 [00:18<03:19, 18.12s/cell]Executing:  17%|█▋        | 2/12 [00:21<01:35,  9.51s/cell]Executing:  25%|██▌       | 3/12 [00:21<00:47,  5.28s/cell]Executing:  42%|████▏     | 5/12 [01:37<02:46, 23.74s/cell]Executing:  58%|█████▊    | 7/12 [01:37<01:05, 13.16s/cell]Executing:  67%|██████▋   | 8/12 [01:40<00:42, 10.59s/cell]Executing:  67%|██████▋   | 8/12 [01:44<00:52, 13.05s/cell]
+Traceback (most recent call last):
+  File "/home/aman.kukde/cilia_ai/run_notebook.py", line 65, in <module>
+    main()
+  File "/home/aman.kukde/cilia_ai/run_notebook.py", line 54, in main
+    pm.execute_notebook(
+  File "/home/aman.kukde/cilia_ai/.venv/lib/python3.12/site-packages/papermill/execute.py", line 131, in execute_notebook
+    raise_for_execution_errors(nb, output_path)
+  File "/home/aman.kukde/cilia_ai/.venv/lib/python3.12/site-packages/papermill/execute.py", line 251, in raise_for_execution_errors
+    raise error
+papermill.exceptions.PapermillExecutionError: 
+---------------------------------------------------------------------------
+Exception encountered at "In [8]":
+---------------------------------------------------------------------------
+NameError                                 Traceback (most recent call last)
+Cell In[8], line 1
+----> 1 plot_input_and_predictions(
+      2     imgs[0],
+      3     predictions[0],
+      4     plot_channels_composite
+      5 )
+
+File ~/cilia_ai/sam2/utils.py:77, in plot_input_and_predictions(img, pred, plot_channels_composite_fn)
+     74 plt.axis('off')
+     76 plt.subplot(233)
+---> 77 plot_channels_composite_fn(img, channels=[2,3])
+     78 plt.title("Input – Channels 2+3")
+     79 plt.axis('off')
+
+File ~/cilia_ai/sam2/utils.py:38, in plot_channels_composite(img, channels, colors, title)
+     32 """
+     33 img: (H, W, C) numpy array
+     34 channels: list of channel indices to display
+     35 colors: optional list of colors; if None, auto-assigns BGRM
+     36 """
+     37 H, W, C = img.shape
+---> 38 composite = np.zeros((H, W, 3), dtype=float)
+     40 # Automatic color mapping
+     41 default_colors = ['B', 'G', 'R', 'M']
+
+NameError: name 'np' is not defined
+
