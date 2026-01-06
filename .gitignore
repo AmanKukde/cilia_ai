@@ -1,5 +1,5 @@
 sam_runs/*
-sam2
+*sam2/*
 *.tif
 data
 *.pt
