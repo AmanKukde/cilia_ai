@@ -1,15 +1,47 @@
-sam_runs/*
-sam2/*
+# Data and outputs
+data/
+outputs/
+checkpoints/*.pth
 *.tif
+*.npy
+*.npz
 
-
+# Python
 __pycache__/
 *.pyc
 *.pyo
-data/
+*.pyd
+.Python
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+
+# Virtual environments
 .venv/
-outputs/*
-*.pt
-*.pth
-*.json
-*.png
+venv/
+ENV/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+
+# Logs
+*.log
+logs/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Specific to this project
+sam_runs/*
+sam2/*  # Note: sam2 is a submodule/external package, our utils are in cilia_utils/

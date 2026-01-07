@@ -2,6 +2,11 @@
 Unified training script for multiple segmentation architectures.
 Supports U-Net, U-Net++, and Hugging Face models (SegFormer, DeepLabV3, Mask2Former, etc.)
 """
+import sys
+from pathlib import Path
+sys.path.append(str(Path(__file__).parent.parent))
+
+
 
 import os
 import argparse

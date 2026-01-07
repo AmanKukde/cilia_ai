@@ -1,6 +1,11 @@
 """
 Example script for using finetuned SAM2 models for inference on new cilia images.
 """
+import sys
+from pathlib import Path
+sys.path.append(str(Path(__file__).parent.parent))
+
+
 
 import argparse
 from pathlib import Path

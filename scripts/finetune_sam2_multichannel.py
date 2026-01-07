@@ -6,6 +6,11 @@ This script trains 3 SAM2 models:
 2. Model C2: Using Channel 2 (C2*3 - channel replicated 3 times)
 3. Model Dual: Using both channels (C1, C2, avg(C1,C2) or overlay)
 """
+import sys
+from pathlib import Path
+sys.path.append(str(Path(__file__).parent.parent))
+
+
 
 import os
 import argparse
