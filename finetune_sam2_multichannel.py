@@ -43,7 +43,7 @@ class CiliaMultichannelDataset(Dataset):
         image_paths: List[str],
         mask_paths: List[str],
         channel_mode: str = 'c1_only',
-        channel_indices: Tuple[int, int] = (2, 3),
+        channel_indices: Tuple[int, int] = (0, 1),
         dual_mode: str = 'average',  # 'average', 'zeros', 'overlay'
         transform=None,
         image_size: int = 1024
@@ -53,7 +53,7 @@ class CiliaMultichannelDataset(Dataset):
             image_paths: List of paths to multichannel TIFF images
             mask_paths: List of paths to mask TIFF files
             channel_mode: One of 'c1_only', 'c2_only', 'dual'
-            channel_indices: Tuple of (C1_idx, C2_idx) - default (2, 3)
+            channel_indices: Tuple of (C1_idx, C2_idx) - default (0, 1)
             dual_mode: For 'dual' mode - 'average', 'zeros', or 'overlay'
             transform: Optional transforms
             image_size: Target image size for SAM2
@@ -505,7 +505,7 @@ def train_model(
     batch_size: int = 4,
     learning_rate: float = 1e-5,
     image_size: int = 1024,
-    channel_indices: Tuple[int, int] = (2, 3)
+    channel_indices: Tuple[int, int] = (0, 1)
 ):
     """
     Train a single SAM2 model variant.
@@ -666,8 +666,8 @@ def main():
     parser.add_argument('--image_size', type=int, default=1024, help='Image size')
 
     # Channel arguments
-    parser.add_argument('--c1_idx', type=int, default=2, help='Channel 1 index')
-    parser.add_argument('--c2_idx', type=int, default=3, help='Channel 2 index')
+    parser.add_argument('--c1_idx', type=int, default=0, help='Channel 1 index')
+    parser.add_argument('--c2_idx', type=int, default=1, help='Channel 2 index')
     parser.add_argument('--dual_mode', type=str, default='average',
                         choices=['average', 'zeros', 'overlay'],
                         help='Mode for combining channels in dual model')

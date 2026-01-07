@@ -1,36 +1,72 @@
-# SAM2 Multichannel Finetuning for Cilia Segmentation
+# Multichannel Segmentation for Cilia Data
 
-This directory contains code for finetuning SAM2 (Segment Anything Model 2) on multichannel cilia microscopy data.
+This directory contains code for training multiple segmentation architectures on multichannel cilia microscopy data, including **U-Net**, **U-Net++**, **SAM2**, and various **Hugging Face models**.
 
 ## Overview
 
-The finetuning pipeline trains **3 separate SAM2 models** to handle different channel configurations:
+The training pipeline trains **3 separate models for each architecture** to handle different channel configurations:
 
-1. **C1 Model** (`c1_model`): Uses Channel 1 only (C1 replicated 3 times → C1*3)
-2. **C2 Model** (`c2_model`): Uses Channel 2 only (C2 replicated 3 times → C2*3)
+1. **C0 Model** (`c1_model`): Uses Channel 0 only (C0 replicated 3 times → C0*3)
+2. **C1 Model** (`c2_model`): Uses Channel 1 only (C1 replicated 3 times → C1*3)
 3. **Dual Model** (`dual_model`): Uses both channels in different combinations:
-   - **C1, C2, Average**: First channel = C1, Second channel = C2, Third channel = (C1+C2)/2
-   - **C1, C2, Zeros**: First channel = C1, Second channel = C2, Third channel = zeros
-   - **C1, C2, Overlay**: First channel = C1, Second channel = C2, Third channel = max(C1, C2)
+   - **C0, C1, Average**: First channel = C0, Second channel = C1, Third channel = (C0+C1)/2
+   - **C0, C1, Zeros**: First channel = C0, Second channel = C1, Third channel = zeros
+   - **C0, C1, Overlay**: First channel = C0, Second channel = C1, Third channel = max(C0, C1)
+
+## Available Architectures
+
+### U-Net Family
+- **unet**: Standard U-Net (64 base channels)
+- **unet_small**: Small U-Net (32 base channels)
+- **unet_tiny**: Tiny U-Net (16 base channels)
+- **unet++**: U-Net++ with nested skip connections
+
+### Hugging Face Models
+- **segformer-b0** to **segformer-b5**: SegFormer variants (lightweight to large)
+- **deeplabv3-resnet50/101**: DeepLabV3 with ResNet backbones
+- **mask2former-swin-tiny/small/base**: Mask2Former with Swin transformers
+- **upernet-swin-tiny/small**: UPerNet with Swin transformers
+- **beit-base/large**: BEiT models for segmentation
+
+### SAM2
+- Use `finetune_sam2_multichannel.py` for SAM2-specific training
 
 ## Files
 
-- `finetune_sam2_multichannel.py`: Main training script with dataset class and training loop
-- `sam2/utils.py`: Utility functions for data processing and channel handling
-- `sam2/plotting_utils.py`: Visualization utilities for training and predictions
-- `run_finetune.sh`: SLURM batch script for running training on cluster
-- `FINETUNE_README.md`: This documentation file
+### Main Training Scripts
+- **`train_segmentation.py`**: Unified training script for all architectures (U-Net, HF models)
+- **`finetune_sam2_multichannel.py`**: SAM2-specific training script
+- **`inference_example.py`**: Example inference script for trained models
+
+### Model Architectures
+- **`models/unet.py`**: U-Net, U-Net++, and variants
+- **`models/model_factory.py`**: Factory for creating all model types
+- **`models/__init__.py`**: Package initialization
+
+### Utilities
+- **`sam2/utils.py`**: Data processing and channel handling utilities
+- **`sam2/plotting_utils.py`**: Visualization utilities
+
+### Scripts
+- **`run_train.sh`**: SLURM batch script for training any architecture
+- **`run_finetune.sh`**: SLURM batch script specifically for SAM2
+
+### Documentation
+- **`FINETUNE_README.md`**: This comprehensive guide
 
 ## Installation
 
 ### Requirements
 
 ```bash
-# Install required packages
+# Core dependencies
 pip install torch torchvision torchaudio
 pip install tifffile numpy matplotlib scikit-image tqdm
 
-# Install SAM2
+# For Hugging Face models (optional)
+pip install transformers
+
+# For SAM2 (optional)
 git clone https://github.com/facebookresearch/segment-anything-2.git
 cd segment-anything-2
 pip install -e .
@@ -70,43 +106,105 @@ data/
 
 ### Channel Indices
 
-By default, the script uses:
-- **C1_IDX = 2**: Channel 1 (e.g., protein channel)
-- **C2_IDX = 3**: Channel 2 (e.g., cilia marker channel)
+By default, the scripts use:
+- **C1_IDX = 0**: Channel 0 (C0)
+- **C2_IDX = 1**: Channel 1 (C1)
 
-Adjust these in `run_finetune.sh` or via command-line arguments if your data has different channel ordering.
+Adjust these in the training scripts or via command-line arguments if your data has different channel ordering.
 
 ## Usage
 
-### Option 1: Using the SLURM Script (Recommended for Cluster)
+### Quick Start: List Available Models
 
-1. Edit `run_finetune.sh` and update the following paths:
+```bash
+python train_segmentation.py --list_models
+```
+
+This will show all available architectures with descriptions.
+
+### Option 1: Train U-Net or Hugging Face Models
+
+#### Using SLURM (Recommended for Cluster)
+
+1. Edit `run_train.sh` and update the following paths:
    ```bash
    IMAGE_DIR="/path/to/your/images"
    MASK_DIR="/path/to/your/masks"
-   SAM2_CFG="/path/to/sam2/config.yaml"
-   SAM2_CHECKPOINT="/path/to/sam2/checkpoint.pth"
+   ARCHITECTURE="unet"  # or "segformer-b0", "deeplabv3-resnet50", etc.
    ```
 
 2. Configure training parameters (optional):
    ```bash
    NUM_EPOCHS=50
    BATCH_SIZE=4
-   LEARNING_RATE=1e-5
-   C1_IDX=2
-   C2_IDX=3
+   LEARNING_RATE=1e-4
+   IMAGE_SIZE=512
+   C1_IDX=0  # C0
+   C2_IDX=1  # C1
    DUAL_MODE="average"  # or "zeros" or "overlay"
    TRAIN_MODELS="c1 c2 dual"  # train all 3 models
    ```
 
 3. Submit the job:
    ```bash
+   sbatch run_train.sh
+   ```
+
+#### Direct Python Execution
+
+Train with U-Net:
+```bash
+python train_segmentation.py \
+    --image_dir /path/to/images \
+    --mask_dir /path/to/masks \
+    --output_dir ./outputs \
+    --architecture unet \
+    --num_epochs 50 \
+    --batch_size 4 \
+    --train_models c1 c2 dual
+```
+
+Train with SegFormer:
+```bash
+python train_segmentation.py \
+    --image_dir /path/to/images \
+    --mask_dir /path/to/masks \
+    --output_dir ./outputs \
+    --architecture segformer-b0 \
+    --pretrained \
+    --num_epochs 30 \
+    --batch_size 8 \
+    --learning_rate 5e-5 \
+    --image_size 512
+```
+
+Train with DeepLabV3:
+```bash
+python train_segmentation.py \
+    --image_dir /path/to/images \
+    --mask_dir /path/to/masks \
+    --output_dir ./outputs \
+    --architecture deeplabv3-resnet50 \
+    --pretrained \
+    --train_models c1 c2 dual
+```
+
+### Option 2: Train SAM2 Models
+
+#### Using SLURM
+
+1. Edit `run_finetune.sh` and update paths (including SAM2 config and checkpoint):
+   ```bash
+   SAM2_CFG="/path/to/sam2/config.yaml"
+   SAM2_CHECKPOINT="/path/to/sam2/checkpoint.pth"
+   ```
+
+2. Submit the job:
+   ```bash
    sbatch run_finetune.sh
    ```
 
-### Option 2: Direct Python Execution
-
-Train all 3 models:
+#### Direct Python Execution
 ```bash
 python finetune_sam2_multichannel.py \
     --image_dir /path/to/images \

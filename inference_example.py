@@ -20,7 +20,7 @@ def predict_with_finetuned_model(
     model_checkpoint: str,
     sam2_cfg: str,
     channel_mode: str = 'c1_only',
-    channel_indices: tuple = (2, 3),
+    channel_indices: tuple = (0, 1),
     dual_mode: str = 'average',
     output_dir: str = './predictions',
     device: str = 'cuda'
@@ -170,10 +170,10 @@ def main():
     parser.add_argument('--channel_mode', type=str, default='c1_only',
                         choices=['c1_only', 'c2_only', 'dual'],
                         help='Channel mode (must match training mode)')
-    parser.add_argument('--c1_idx', type=int, default=2,
-                        help='Channel 1 index')
-    parser.add_argument('--c2_idx', type=int, default=3,
-                        help='Channel 2 index')
+    parser.add_argument('--c1_idx', type=int, default=0,
+                        help='Channel 1 index (C0)')
+    parser.add_argument('--c2_idx', type=int, default=1,
+                        help='Channel 2 index (C1)')
     parser.add_argument('--dual_mode', type=str, default='average',
                         choices=['average', 'zeros', 'overlay'],
                         help='Dual mode (if using dual channel_mode)')
