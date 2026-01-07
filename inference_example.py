@@ -11,7 +11,7 @@ from tqdm import tqdm
 
 from sam2.build_sam import build_sam2
 from sam2.sam2_image_predictor import SAM2ImagePredictor
-from sam2.utils import prepare_sam2_input
+from cilia_utils.utils import prepare_sam2_input
 from finetune_sam2_multichannel import CiliaMultichannelDataset
 
 
@@ -62,18 +62,18 @@ def predict_with_finetuned_model(
         # Prepare channels based on mode
         if channel_mode == 'c1_only':
             c1 = image[:, :, channel_indices[0]]
-            from sam2.utils import normalize_channel
+            from cilia_utils.utils import normalize_channel
             c1_norm = normalize_channel(c1)
             rgb_image = np.stack([c1_norm] * 3, axis=-1)
 
         elif channel_mode == 'c2_only':
             c2 = image[:, :, channel_indices[1]]
-            from sam2.utils import normalize_channel
+            from cilia_utils.utils import normalize_channel
             c2_norm = normalize_channel(c2)
             rgb_image = np.stack([c2_norm] * 3, axis=-1)
 
         elif channel_mode == 'dual':
-            from sam2.utils import normalize_channel
+            from cilia_utils.utils import normalize_channel
             c1 = normalize_channel(image[:, :, channel_indices[0]])
             c2 = normalize_channel(image[:, :, channel_indices[1]])
 

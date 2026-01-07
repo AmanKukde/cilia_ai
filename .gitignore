@@ -2,3 +2,9 @@ sam_runs/*
 sam2/*
 *.tif
 
+
+__pycache__/
+*.pyc
+*.pyo
+data/
+.venv/

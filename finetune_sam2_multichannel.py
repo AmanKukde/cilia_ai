@@ -24,8 +24,8 @@ import matplotlib.pyplot as plt
 
 from sam2.build_sam import build_sam2
 from sam2.sam2_image_predictor import SAM2ImagePredictor
-from sam2.utils import prepare_sam2_input, normalize_channel
-from sam2.plotting_utils import visualize_training_batch, plot_training_metrics
+from cilia_utils.utils import prepare_sam2_input, normalize_channel
+from cilia_utils.plotting_utils import visualize_training_batch, plot_training_metrics
 
 
 class CiliaMultichannelDataset(Dataset):

@@ -44,8 +44,8 @@ The training pipeline trains **3 separate models for each architecture** to hand
 - **`models/__init__.py`**: Package initialization
 
 ### Utilities
-- **`sam2/utils.py`**: Data processing and channel handling utilities
-- **`sam2/plotting_utils.py`**: Visualization utilities
+- **`cilia_utils/utils.py`**: Data processing and channel handling utilities
+- **`cilia_utils/plotting_utils.py`**: Visualization utilities
 
 ### Scripts
 - **`run_train.sh`**: SLURM batch script for training any architecture

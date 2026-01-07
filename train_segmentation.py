@@ -18,7 +18,7 @@ from tqdm import tqdm
 
 from finetune_sam2_multichannel import CiliaMultichannelDataset, prepare_data_splits
 from models.model_factory import ModelFactory
-from sam2.plotting_utils import plot_training_metrics
+from cilia_utils.plotting_utils import plot_training_metrics
 
 
 class SegmentationTrainer:
