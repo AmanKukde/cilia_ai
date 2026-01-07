@@ -45,3 +45,7 @@ Thumbs.db
 # Specific to this project
 sam_runs/*
 sam2/*  # Note: sam2 is a submodule/external package, our utils are in cilia_utils/
+
+#SAM2 checkpoints 
+*.pt
+checkpoint_epoch*
