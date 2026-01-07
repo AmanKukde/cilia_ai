@@ -1,5 +1,14 @@
 # Quick Start Guide
 
+## 🎯 Data Format Support
+
+This repository supports **two data formats**:
+
+1. **TIFF files** (`.tif`) - Use `train_segmentation.py`
+2. **Numpy files** (`.npy` or `.npz`) - Use `train_segmentation_npz.py` ⭐ **NEW!**
+
+If you have `.npy` or `.npz` files with NCHW format, see the **[NPZ Data Guide](#training-on-npy-npz-files)** below or read **`NPZ_DATA_README.md`** for complete documentation.
+
 ## Fixed: SAM2 Package Conflict ✅
 
 The local `sam2/` directory has been renamed to `cilia_utils/` to avoid conflicts with the installed SAM2 package.
@@ -126,6 +135,43 @@ python finetune_sam2_multichannel.py \
 - `mask2former-swin-tiny` - Mask2Former with Swin Tiny
 - `upernet-swin-tiny` - UPerNet with Swin Tiny
 - `beit-base` - BEiT Base for segmentation
+
+## Training on .npy/.npz Files
+
+If your data is stored as `.npy` or `.npz` files in NCHW format (N, C, H, W), use the specialized training script:
+
+### Quick Example
+
+```bash
+python train_segmentation_npz.py \
+    --images_npz /path/to/images.npy \
+    --masks_npz /path/to/masks.npy \
+    --output_dir ./outputs \
+    --architecture unet \
+    --batch_size 8 \
+    --image_size 512 \
+    --c1_idx 0 \
+    --c2_idx 1 \
+    --train_models c1 c2 dual
+```
+
+### Your Specific Data
+
+Based on your paths:
+
+```bash
+python train_segmentation_npz.py \
+    --images_npz /home/aman.kukde/cilia_ai/data/prompted_outputs/images_cleaned_prompted.npy \
+    --masks_npz /home/aman.kukde/cilia_ai/data/prompted_outputs/predictions_sam2_cleaned.npy \
+    --output_dir ./outputs \
+    --architecture segformer-b0 \
+    --pretrained \
+    --batch_size 8 \
+    --image_size 512 \
+    --num_epochs 30
+```
+
+**See `NPZ_DATA_README.md` for complete documentation!**
 
 ## Channel Configuration
 
