@@ -421,7 +421,7 @@ def main():
                         help='Channel 0 index (C0)')
     parser.add_argument('--c2_idx', type=int, default=1,
                         help='Channel 1 index (C1)')
-    parser.add_argument('--dual_mode', type=str, default='average',
+    parser.add_argument('--dual_mode', type=str, default='overlay',
                         choices=['average', 'zeros', 'overlay'],
                         help='Mode for combining channels in dual model')
 

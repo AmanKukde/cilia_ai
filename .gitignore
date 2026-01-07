@@ -8,3 +8,8 @@ __pycache__/
 *.pyo
 data/
 .venv/
+outputs/*
+*.pt
+*.pth
+*.json
+*.png

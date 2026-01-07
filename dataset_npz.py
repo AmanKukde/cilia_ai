@@ -25,8 +25,7 @@ class CiliaNPZDataset(Dataset):
         image_size: Target image size
         images_key: Key name in npz file for images (default: 'images')
         masks_key: Key name in npz file for masks (default: 'masks')
-    """
-
+     """
     def __init__(
         self,
         images_npz: str,
@@ -48,20 +47,18 @@ class CiliaNPZDataset(Dataset):
         self.transform = transform
         self.image_size = image_size
 
-        # Load the .npz or .npy files
+        # -------------------------
+        # Load images
+        # -------------------------
         print(f"Loading images from: {images_npz}")
 
-        # Handle both .npz and .npy files
         if images_npz.endswith(".npy"):
             self.images = np.load(images_npz)
-            images_key = "direct"
-            print(f"  Loaded .npy file: shape {self.images.shape}, dtype {self.images.dtype}")
+            print(f"  Loaded .npy images: shape {self.images.shape}, dtype {self.images.dtype}")
         else:
             images_data = np.load(images_npz)
 
-            # Auto-detect key if not provided
             if images_key is None:
-                # Try common key names
                 for key in ["images", "arr_0", "data", "x"]:
                     if key in images_data:
                         images_key = key
@@ -72,17 +69,17 @@ class CiliaNPZDataset(Dataset):
             self.images = images_data[images_key]
             print(f"  Loaded images with key '{images_key}': shape {self.images.shape}, dtype {self.images.dtype}")
 
+        # -------------------------
+        # Load masks
+        # -------------------------
         print(f"Loading masks from: {masks_npz}")
 
-        # Handle both .npz and .npy files
         if masks_npz.endswith(".npy"):
             self.masks = np.load(masks_npz)
-            masks_key = "direct"
-            print(f"  Loaded .npy file: shape {self.masks.shape}, dtype {self.masks.dtype}")
+            print(f"  Loaded .npy masks: shape {self.masks.shape}, dtype {self.masks.dtype}")
         else:
             masks_data = np.load(masks_npz)
 
-            # Auto-detect key if not provided
             if masks_key is None:
                 for key in ["masks", "arr_0", "labels", "y"]:
                     if key in masks_data:
@@ -93,69 +90,42 @@ class CiliaNPZDataset(Dataset):
 
             self.masks = masks_data[masks_key]
             print(f"  Loaded masks with key '{masks_key}': shape {self.masks.shape}, dtype {self.masks.dtype}")
-        print(f"Loading images from: {images_npz}")
-        images_data = np.load(images_npz)
 
-        # Auto-detect key if not provided
-        if images_key is None:
-            # Try common key names
-            for key in ['images', 'arr_0', 'data', 'x']:
-                if key in images_data:
-                    images_key = key
-                    break
-            if images_key is None:
-                images_key = list(images_data.keys())[0]
+        # -------------------------
+        # Validate & normalize shapes
+        # -------------------------
+        assert self.images.ndim == 4, f"Images must be 4D (NCHW), got {self.images.shape}"
 
-        self.images = images_data[images_key]
-        print(f"  Loaded images with key '{images_key}': shape {self.images.shape}, dtype {self.images.dtype}")
-
-        print(f"Loading masks from: {masks_npz}")
-        masks_data = np.load(masks_npz)
-
-        # Auto-detect key if not provided
-        if masks_key is None:
-            for key in ['masks', 'arr_0', 'labels', 'y']:
-                if key in masks_data:
-                    masks_key = key
-                    break
-            if masks_key is None:
-                masks_key = list(masks_data.keys())[0]
-
-        self.masks = masks_data[masks_key]
-        print(f"  Loaded masks with key '{masks_key}': shape {self.masks.shape}, dtype {self.masks.dtype}")
-
-        # Validate shapes
-        assert self.images.ndim == 4, f"Images must be 4D (NCHW), got shape {self.images.shape}"
-
-        # Handle masks that might be 3D (NHW) or 4D (NCHW)
+        # Masks: NHW → NCHW
         if self.masks.ndim == 3:
-            # NHW -> NCHW with C=1
             self.masks = self.masks[:, None, :, :]
-            print(f"  Expanded masks to 4D: {self.masks.shape}")
+            print(f"  Expanded masks to NCHW: {self.masks.shape}")
         elif self.masks.ndim == 4:
-            # Already NCHW, optionally take first channel if multi-channel
-            if self.masks.shape[1] > 1:
-                print(f"  Masks have {self.masks.shape[1]} channels, using first channel only")
-                self.masks = self.masks[:, 0:1, :, :]
+            pass
         else:
-            raise ValueError(f"Masks must be 3D (NHW) or 4D (NCHW), got shape {self.masks.shape}")
+            raise ValueError(f"Masks must be 3D or 4D, got {self.masks.shape}")
 
-        # Verify same number of samples
+        # -------------------------
+        # Sanity checks
+        # -------------------------
         assert self.images.shape[0] == self.masks.shape[0], \
-            f"Number of images ({self.images.shape[0]}) must match masks ({self.masks.shape[0]})"
+            f"Images ({self.images.shape[0]}) != masks ({self.masks.shape[0]})"
 
-        # Verify channels exist
         num_channels = self.images.shape[1]
-        assert self.c1_idx < num_channels, f"C0 index {self.c1_idx} >= number of channels {num_channels}"
-        assert self.c2_idx < num_channels, f"C1 index {self.c2_idx} >= number of channels {num_channels}"
+        assert self.c1_idx < num_channels, f"c1_idx {self.c1_idx} >= channels {num_channels}"
+        assert self.c2_idx < num_channels, f"c2_idx {self.c2_idx} >= channels {num_channels}"
 
-        print(f"\nDataset initialized:")
-        print(f"  Samples: {len(self)}")
-        print(f"  Image channels: {num_channels}")
+        # -------------------------
+        # Summary
+        # -------------------------
+        print("\nDataset initialized:")
+        print(f"  Samples       : {len(self)}")
+        print(f"  Image shape   : {self.images.shape}")
+        print(f"  Mask shape    : {self.masks.shape}")
+        print(f"  Channel mode  : {self.channel_mode}")
+        print(f"  Dual mode     : {self.dual_mode}")
         print(f"  Using channels: C{self.c1_idx}, C{self.c2_idx}")
-        print(f"  Channel mode: {channel_mode}")
-        print(f"  Dual mode: {dual_mode}")
-        print(f"  Target size: {image_size}x{image_size}")
+        print(f"  Target size   : {self.image_size}x{self.image_size}")
 
     def __len__(self):
         return self.images.shape[0]
@@ -223,8 +193,19 @@ class CiliaNPZDataset(Dataset):
         mask = self.masks[idx]    # (1, H, W) or (H, W)
 
         # Ensure mask is 2D
-        if mask.ndim == 3:
-            mask = mask[0]  # Take first channel
+        mask = self.masks[idx]  # (C, H, W)
+
+        if self.channel_mode == "c1_only":
+            mask = mask[self.c1_idx]
+
+        elif self.channel_mode == "c2_only":
+            mask = mask[self.c2_idx]
+
+        elif self.channel_mode == "dual":
+            # choose a policy (most common options below)
+            mask = np.maximum(mask[self.c1_idx], mask[self.c2_idx])
+            # OR: mask = mask[self.c1_idx]
+            # OR: mask = mask[self.c2_idx]
 
         # Prepare RGB channels - need to transpose to (H, W, C) first
         image_hwc = np.transpose(image, (1, 2, 0))  # (C, H, W) -> (H, W, C)
