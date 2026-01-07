@@ -253,6 +253,33 @@ class CiliaNPZDataset(Dataset):
             'mask': mask_tensor,
             'index': idx
         }
+    @classmethod
+    def from_arrays(
+        cls,
+        images: np.ndarray,
+        masks: np.ndarray,
+        channel_mode: str = "c1_only",
+        channel_indices: Tuple[int,int]=(0,1),
+        dual_mode: str = "average",
+        transform=None,
+        image_size: int = 512
+    ):
+        obj = cls.__new__(cls)
+        obj.images = images
+        obj.masks = masks
+        obj.channel_mode = channel_mode
+        obj.c1_idx, obj.c2_idx = channel_indices
+        obj.dual_mode = dual_mode
+        obj.transform = transform
+        obj.image_size = image_size
+
+        # sanity checks
+        assert obj.images.ndim == 4, f"Images must be 4D, got {obj.images.shape}"
+        assert obj.masks.ndim == 4, f"Masks must be 4D, got {obj.masks.shape}"
+        assert obj.images.shape[0] == obj.masks.shape[0], "Number of images != masks"
+
+        print(f"Dataset created from arrays: {len(obj)} samples, shape {obj.images.shape}")
+        return obj
 
 
 def prepare_npz_data_splits(
