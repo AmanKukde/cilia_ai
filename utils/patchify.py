@@ -5,7 +5,7 @@ Utilities for patchifying and reconstructing large images.
 import numpy as np
 from typing import Tuple, List
 import torch
-from tqdm import tqdm
+from tqdm.notebook import tqdm
 
 
 def patchify_image(
@@ -190,7 +190,7 @@ def predict_on_patches(
     n_batches = (n_patches + batch_size - 1) // batch_size
 
     with torch.no_grad():
-        for i in tqdm(range(n_batches), desc='Predicting patches'):
+        for i in tqdm(range(n_batches), desc='Predicting patches', leave=False):
             start_idx = i * batch_size
             end_idx = min((i + 1) * batch_size, n_patches)
 
@@ -234,13 +234,13 @@ def predict_large_image(
         pred_mask: Predicted mask (H, W) - soft predictions
         pred_binary: Binary mask (H, W)
     """
-    print(f"Patchifying image with shape {image.shape}...")
+    #print(f"Patchifying image with shape {image.shape}...")
     patches, metadata = patchify_image(image, patch_size, overlap)
 
-    print(f"Created {len(patches)} patches of size {patch_size}x{patch_size}")
+    #print(f"Created {len(patches)} patches of size {patch_size}x{patch_size}")
 
     # Predict on patches
-    print("Running predictions...")
+    #print("Running predictions...")
     pred_patches = predict_on_patches(model, patches, batch_size, device)
 
     # Remove channel dimension if single class
@@ -248,7 +248,7 @@ def predict_large_image(
         pred_patches = pred_patches[:, 0, :, :]  # (N, H, W)
 
     # Reconstruct
-    print("Reconstructing prediction...")
+    #print("Reconstructing prediction...")
     # Need to handle the channel dimension
     if pred_patches.ndim == 3:
         # Add channel dimension back for unpatchify

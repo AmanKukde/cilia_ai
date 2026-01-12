@@ -47,7 +47,7 @@ def keep_connected_blobs(predictions, target_channel, reference_channel, min_ove
     """
     output = predictions.copy()
 
-    for i in tqdm(range(predictions.shape[0])):
+    for i in tqdm(range(predictions.shape[0]), desc='Filtering blobs'):
         target = predictions[i, :, :, target_channel]
         reference = predictions[i, :, :, reference_channel]
 
